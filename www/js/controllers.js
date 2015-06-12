@@ -4,32 +4,34 @@ angular.module('starter.controllers', [])
   $scope.location = {empty: true};
   Geolocation.get().then(function(success){
     $scope.location = {lat: success.latitude, lon: success.longitude};
-  });
-
+  })
 })
 
-.controller('ChatsCtrl', function($scope, Chats) {
+.controller('LoginCtrl', function($scope) {
+    $scope.text = 'This is some text!'
 
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-  
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
+
+  $scope.onTap = function() {
+    console.log('you tapped login!')
   }
 })
 
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
+.controller('LatestCtrl', function($scope, RedditAPI) {
+    doRefresh();
+    function doRefresh() {
+        RedditAPI.gonewild().then(function(data){
+            $scope.images = data;
+            $scope.$broadcast('scroll.refreshComplete');
+        })
+    }
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
+    $scope.gotoImg = function(image) {
+        console.log(image)
+      //  state.go('fullscreen')
+    }
 });
+
+
+
+
+
