@@ -1,36 +1,18 @@
 angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope, Geolocation, $interval) {
-  $scope.location = {empty: true};
-  Geolocation.get().then(function(success){
-    $scope.location = {lat: success.latitude, lon: success.longitude};
-    var locArray = [];
-    locArray.push(success.latitude);
-    locArray.push(success.longitude);
-      Geolocation.setEventForNearbyUsers(locArray, 200);
-  });
 
-// uncomment this to generate random users that may be close to the selected one 'da_video_live'
+  // uncomment the line below to get a chance to discover more users nearby... it simply add random users to the db
   // $interval(function(){
-  //    Geolocation.setTestMoreUsers();
-  //       }, 2000);
-  Geolocation.getUpdatedPosition().then(null, function(error){
-    
-  }, function(position){
-    console.log(
-      "updated posaition on wahcth", position)
-    // $scope.location = {lat: success.latitude, lon: success.longitude};
-  })
+  //   Geolocation.setTestMoreUsers()
+  // }, 1000);
+
   $scope.nearbyUsers = [];
  // Listen for Angular Broadcast
   $scope.$on("SEARCH:KEY_ENTERED", function (event, key, location, distance) {
       // Do something interesting with object
       $scope.nearbyUsers.push({name: key, location: location, distance: distance});
-      console.log(event, key, location, distance)
-      // Cancel the query if the distance is > 5 km
-      if(distance > 5) {
-          // geoQueryCallback.cancel();
-      }
+      // console.log(key, location, distance)
   });
 })
 
@@ -49,7 +31,7 @@ angular.module('starter.controllers', [])
     Chats.remove(chat);
   }
 
-  // Geolocation.setEventForNearbyUsers(20);
+   // Geolocation.setEventForNearbyUsers(20);
   
 })
 

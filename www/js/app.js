@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'ngCordova', 'firebase', 'angularGeoFire'])
 
-.run(function($ionicPlatform, $cordovaGeolocation, $geofire) {
+.run(function($ionicPlatform, Geolocation, $geofire) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -18,13 +18,21 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       // org.apache.cordova.statusbar required
       StatusBar.styleLightContent();
     }
-    
+
     // var $geo = $geofire(new Firebase('https://gonewilder.firebaseio.com/'));
-     $cordovaGeolocation.getCurrentPosition({timeout: 10000, maximumAge: 90000, enableHighAccuracy: true}).then(function(success){
-        console.log(success);
+     // $cordovaGeolocation.getCurrentPosition({timeout: 10000, maximumAge: 90000, enableHighAccuracy: true}).then(function(success){
+     //    console.log(success);
         
        
-     });
+     // });
+    Geolocation.get().then(function(success){
+        
+        var locArray = [];
+        locArray.push(success.latitude);
+        locArray.push(success.longitude);
+          Geolocation.setEventForNearbyUsers(locArray, 200);
+          Geolocation.pushLocationToDB();
+      });
   });
 })
 

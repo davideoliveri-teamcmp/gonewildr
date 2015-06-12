@@ -54,43 +54,57 @@ angular.module('starter.services', [])
   var $geo = $geofire(new Firebase('https://gonewilder.firebaseio.com/'));
 
   var storedCoordinates = [];
-  
-  return {
-    get: function(){
-      var defer = $q.defer();
-      $cordovaGeolocation.getCurrentPosition({timeout: 10000, maximumAge: 90000, enableHighAccuracy: true}).then(function(success){
-          defer.resolve(success.coords);
-          storedCoordinates = [success.coords.latitude, success.coords.lingitude];
 
-          var coords = success.coords;
-          // fake a push into firebase for this user with these coordinates
-          $geo.$set("da_video_live", [coords.latitude, coords.longitude])
-            .catch(function(err) {
-                $log.error(err);
-            });
-       }, function(fail){
-        defer.reject(fail);
-       });
-    return defer.promise;
-    }, 
-    getUpdatedPosition: function(){
-      var watch = $cordovaGeolocation.watchPosition({timeout: 1000, maximumAge: 90000, enableHighAccuracy: true}); 
-      return watch;  
-    }, 
-    getStored: function(){
-      return storedCoordinates;
-    }, 
-    setEventForNearbyUsers: function(coords, r){
-      // set a query to retrieve users whose location is close to the current one, which is the one of the authenticated user....
+  var watch;
+
+  function get(){
+      var defer = $q.defer();
+      $cordovaGeolocation.getCurrentPosition({timeout: 1000, maximumAge: 9000, enableHighAccuracy: true})
+        .then(function(success){
+          defer.resolve(success.coords);
+          storedCoordinates = [success.coords.latitude, success.coords.longitude];
+        }, function(fail){
+            defer.reject(fail);
+        });
+      return defer.promise;
+  }
+  
+  function getUpdatedPosition(){
+     watch = $cordovaGeolocation.watchPosition({timeout: 1001, maximumAge: 9000, enableHighAccuracy: true}); 
+      return watch; 
+  }
+
+  function pushLocationToDB(){
+    console.log("pushong to firebase", storedCoordinates);
+    // "da_video_live" will be replaced with the name of the authenticated user....
+    $geo.$set("da_video_live", storedCoordinates)
+      .catch(function(err) {
+          $log.error(err);
+      });
+  }
+
+  function clearWatch(){
+    // this may not work if called, that's life....
+    $cordovaGeolocation.clearWatch(watch);
+  }
+
+  function getStored(){
+    return storedCoordinates;
+  }
+
+  function setEventForNearbyUsers(coords, r){
+    // set a query to retrieve users whose location is close to the current one, which is the one of the authenticated user....
       var query = $geo.$query({
         center: coords, 
         radius: r
       });
-
+      // this will broadcast an event whenever a new user is added into the db AND is close to me (the user of the app)
       var geoQueryCallback = query.on("key_entered", "SEARCH:KEY_ENTERED");
-    },
-    setTestMoreUsers: function(){
-      var newUserName = "";
+  }
+
+  function setTestMoreUsers(){
+    // thsi function is just to create random user with semi-random coordinates, so that we can test realtime updates on the list of users... it works...
+    var newUserName = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     for( var i=0; i < 5; i++ ){
@@ -100,13 +114,19 @@ angular.module('starter.services', [])
     var lon = Math.random()*2*2.13907;
      
       $geo.$set(newUserName, [lat, lon])
-            .catch(function(err) {
-                $log.error(err);
-            });
+        .catch(function(err) {
+            $log.error(err);
+        });
+  }
 
-          
-    }
-    
+  return {
+    get: get,
+    getUpdatedPosition: getUpdatedPosition,
+    pushLocationToDB: pushLocationToDB, 
+    clearWatch: clearWatch,
+    getStored: getStored,
+    setEventForNearbyUsers: setEventForNearbyUsers,
+    setTestMoreUsers: setTestMoreUsers    
   }
 
 }])
