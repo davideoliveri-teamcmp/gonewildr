@@ -47,4 +47,46 @@ angular.module('starter.services', [])
       return null;
     }
   };
-});
+})
+
+
+.service('AuthenticationService', function() {
+
+})
+
+.service('RedditAPI', function($q, $http) {
+    var service = {
+        gonewild: gonewild
+    }
+
+    function gonewild() {
+        var deferred = $q.defer();
+        $http.get('http://www.reddit.com/r/gonewild/new.json')
+        .success(function(response) {
+            //console.log(extractImages(response.data))
+            //return response.data
+           deferred.resolve(extractImages(response.data));
+
+        })
+        .error(function(response) {
+            console.log(response.data.message)
+        })
+        return deferred.promise;
+    }
+
+    function extractImages(data) {
+        var images = [];
+            
+
+        data.children.forEach(function(element, index, array){
+            var image = {};
+            image.thumb = element.data.thumbnail;
+            image.full = element.data.url;
+            images.push(image);
+        })
+        return images
+    }
+
+    return service;
+
+})

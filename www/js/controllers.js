@@ -1,5 +1,24 @@
 angular.module('starter.controllers', [])
 
+.controller('LoginCtrl', function($scope) {
+    $scope.text = 'This is some text!'
+
+
+  $scope.onTap = function() {
+    console.log('you tapped login!')
+  }
+})
+
+.controller('TestCtrl', function($scope, RedditAPI) {
+RedditAPI.gonewild().then(function(data){
+    console.log('ctrl data', data)
+    $scope.images = data;
+})
+})
+
+
+
+
 .controller('DashCtrl', function($scope) {})
 
 .controller('ChatsCtrl', function($scope, Chats) {
@@ -19,10 +38,13 @@ angular.module('starter.controllers', [])
 
 .controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
   $scope.chat = Chats.get($stateParams.chatId);
+
 })
 
 .controller('AccountCtrl', function($scope) {
   $scope.settings = {
     enableFriends: true
   };
-});
+})
+
+

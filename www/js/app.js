@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'ngCordova'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -19,6 +19,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       StatusBar.styleLightContent();
     }
   });
+
+    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
+            if (toState.authenticate && !AuthenticationService.isLoggedIn()) {
+                $state.go('login');
+                event.preventDefault();
+            }
+    });
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
@@ -30,54 +37,48 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   $stateProvider
 
   // setup an abstract state for the tabs directive
-    .state('tab', {
-    url: "/tab",
-    abstract: true,
-    templateUrl: "templates/tabs.html"
+    .state('login', {
+        url: '/login',
+        //abstract: true,
+        templateUrl: "templates/login.html",
+        controller: "LoginCtrl",
+        authenticate: false
   })
+
+    .state('home', {
+        url: '/home',
+        templateUrl: 'templates/home.html',
+        controller: 'HomeCtrl',
+        authenticate: true
+    })
+    .state('test', {
+        url: '/test',
+        templateUrl: 'templates/test.html',
+        controller: 'TestCtrl',
+        authenticate: false
+    })
 
   // Each tab has its own nav history stack:
 
-  .state('tab.dash', {
-    url: '/dash',
-    views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl'
+    function authenticate($q, user, $state, $timeout) {
+      if (user.isAuthenticated()) {
+        // Resolve the promise successfully
+        return $q.when()
+      } else {
+        // The next bit of code is asynchronously tricky.
+
+        $timeout(function() {
+          // This code runs after the authentication promise has been rejected.
+          // Go to the log-in page
+          $state.go('login')
+        })
+
+        // Reject the authentication promise to prevent the state from loading
+        return $q.reject()
       }
     }
-  })
-
-  .state('tab.chats', {
-      url: '/chats',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
-          controller: 'ChatsCtrl'
-        }
-      }
-    })
-    .state('tab.chat-detail', {
-      url: '/chats/:chatId',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
-        }
-      }
-    })
-
-  .state('tab.account', {
-    url: '/account',
-    views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
-      }
-    }
-  });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/login');
 
 });
