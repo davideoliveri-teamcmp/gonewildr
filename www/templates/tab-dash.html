@@ -1,8 +1,6 @@
 <ion-view view-title="Dashboard">
   <ion-content class="padding">
-
-    <!-- Updates -->
-    <div class="list card">
+    <!-- <div class="list card">
       <div class="item item-divider">Recent Updates</div>
       <div class="item item-body">
         <div>
@@ -10,8 +8,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Health -->
     <div class="list card">
       <div class="item item-divider">Health</div>
       <div class="item item-body">
@@ -20,13 +16,26 @@
         </div>
       </div>
     </div>
-
-    <!-- Upcoming -->
     <div class="list card">
       <div class="item item-divider">Upcoming</div>
       <div class="item item-body">
         <div>
           You have <b>29</b> meetings on your calendar tomorrow.
+        </div>
+      </div>
+    </div> -->
+    <div>Discovered {{nearbyUsers.length}} users</div>
+   <!--  <div ng-repeat="user in nearbyUsers">
+      <h3>{{user.name}}</h3>
+      <p>{{user.distance}}, {{user.location}}</p>
+      <hr>
+    </div> -->
+
+    <div class="list card" ng-repeat="user in nearbyUsers">
+      <div class="item item-divider"> {{user.name}} </div>
+      <div class="item item-body">
+        <div>
+          Distance: {{user.distance}} <b>Location: {{user.location}}</b>
         </div>
       </div>
     </div>
@@ -43,8 +52,6 @@
         <div class="user-distance">0 mi</div>
       </div>
     </div>
-
-    <div>{{location | json}}</div>
 
   </ion-content>
 </ion-view>

@@ -64,25 +64,84 @@ angular.module('starter.services', [])
   }
 }])
 
-.service('Geolocation', ["$cordovaGeolocation", "$q", function($cordovaGeolocation, $q){
+.service('Geolocation', ["$cordovaGeolocation", "$q", "$geofire", function($cordovaGeolocation, $q, $geofire){
   
-  var storedCoordinates = {};
-  
-  return {
-    get: function(){
-      var defer = $q.defer();
-      $cordovaGeolocation.getCurrentPosition({timeout: 10000, maximumAge: 90000, enableHighAccuracy: true}).then(function(success){
-          defer.resolve(success.coords);
-          storedCoordinates = {lat: success.coords.latitude, lon: success.coords.lingitude};
-       }, function(fail){
-        defer.reject(fail);
-       });
-    return defer.promise;
-    }, 
+  var $geo = $geofire(new Firebase('https://gonewilder.firebaseio.com/'));
 
-    getStored: function(){
-      return storedCoordinates;
-    }
+  var storedCoordinates = [];
+
+  var watch;
+
+  function get(){
+      var defer = $q.defer();
+      $cordovaGeolocation.getCurrentPosition({timeout: 1000, maximumAge: 9000, enableHighAccuracy: true})
+        .then(function(success){
+          defer.resolve(success.coords);
+          storedCoordinates = [success.coords.latitude, success.coords.longitude];
+        }, function(fail){
+            defer.reject(fail);
+        });
+      return defer.promise;
+  }
+  
+  function getUpdatedPosition(){
+     watch = $cordovaGeolocation.watchPosition({timeout: 1001, maximumAge: 9000, enableHighAccuracy: true}); 
+      return watch; 
   }
 
-}])
+  function pushLocationToDB(){
+    console.log("pushong to firebase", storedCoordinates);
+    // "da_video_live" will be replaced with the name of the authenticated user....
+    $geo.$set("da_video_live", storedCoordinates)
+      .catch(function(err) {
+          $log.error(err);
+      });
+  }
+
+  function clearWatch(){
+    // this may not work if called, that's life....
+    $cordovaGeolocation.clearWatch(watch);
+  }
+
+  function getStored(){
+    return storedCoordinates;
+  }
+
+  function setEventForNearbyUsers(coords, r){
+    // set a query to retrieve users whose location is close to the current one, which is the one of the authenticated user....
+      var query = $geo.$query({
+        center: coords, 
+        radius: r
+      });
+      // this will broadcast an event whenever a new user is added into the db AND is close to me (the user of the app)
+      var geoQueryCallback = query.on("key_entered", "SEARCH:KEY_ENTERED");
+  }
+
+  function setTestMoreUsers(){
+    // thsi function is just to create random user with semi-random coordinates, so that we can test realtime updates on the list of users... it works...
+    var newUserName = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 5; i++ ){
+      newUserName += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    var lat = Math.random()*2*41.3907;
+    var lon = Math.random()*2*2.13907;
+     
+      $geo.$set(newUserName, [lat, lon])
+        .catch(function(err) {
+            $log.error(err);
+        });
+  }
+
+  return {
+    get: get,
+    getUpdatedPosition: getUpdatedPosition,
+    pushLocationToDB: pushLocationToDB, 
+    clearWatch: clearWatch,
+    getStored: getStored,
+    setEventForNearbyUsers: setEventForNearbyUsers,
+    setTestMoreUsers: setTestMoreUsers    
+  }
+
+}]);
