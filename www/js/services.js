@@ -47,4 +47,28 @@ angular.module('starter.services', [])
       return null;
     }
   };
-});
+})
+
+.service('Geolocation', ["$cordovaGeolocation", "$q", function($cordovaGeolocation, $q){
+  
+  var storedCoordinates = {};
+  
+  return {
+    get: function(){
+      var defer = $q.defer();
+      $cordovaGeolocation.getCurrentPosition({timeout: 10000, maximumAge: 90000, enableHighAccuracy: true}).then(function(success){
+          defer.resolve(success.coords);
+          storedCoordinates = {lat: success.coords.latitude, lon: success.coords.lingitude};
+       }, function(fail){
+        defer.reject(fail);
+       });
+    return defer.promise;
+    }, 
+
+    getStored: function(){
+      return storedCoordinates;
+    }
+  }
+
+}])
+
