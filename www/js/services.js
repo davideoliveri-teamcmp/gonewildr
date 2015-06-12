@@ -49,6 +49,21 @@ angular.module('starter.services', [])
   };
 })
 
+.factory('UsersList', ['$http', '$q', function($http, $q) {
+  return {
+    getUsers: function (num) {
+      return $http
+        .get('http://api.randomuser.me/?results='+num)
+        .success(function (data) {
+          return data;
+        })
+        .error(function (data, status, headers, config) {
+          console.log('status', status, data);
+        });
+    }
+  }
+}])
+
 .service('Geolocation', ["$cordovaGeolocation", "$q", function($cordovaGeolocation, $q){
   
   var storedCoordinates = {};
@@ -71,4 +86,3 @@ angular.module('starter.services', [])
   }
 
 }])
-

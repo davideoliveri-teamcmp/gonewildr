@@ -1,5 +1,7 @@
 <ion-view view-title="Dashboard">
   <ion-content class="padding">
+
+    <!-- Updates -->
     <div class="list card">
       <div class="item item-divider">Recent Updates</div>
       <div class="item item-body">
@@ -8,6 +10,8 @@
         </div>
       </div>
     </div>
+
+    <!-- Health -->
     <div class="list card">
       <div class="item item-divider">Health</div>
       <div class="item item-body">
@@ -16,6 +20,8 @@
         </div>
       </div>
     </div>
+
+    <!-- Upcoming -->
     <div class="list card">
       <div class="item item-divider">Upcoming</div>
       <div class="item item-body">
@@ -24,6 +30,21 @@
         </div>
       </div>
     </div>
+
+    <!-- Users List -->
+    <div class="list card">
+      <div class="item item-divider">Users</div>
+
+      <div class="item" ng-repeat="item in usersList">
+        <i class="icon" ng-class="{'user-female': item.user.gender === 'female', 'user-male': item.user.gender === 'male'}"></i>
+  
+        <div class="user-username">{{item.user.username}}</div>
+
+        <div class="user-distance">0 mi</div>
+      </div>
+    </div>
+
     <div>{{location | json}}</div>
+
   </ion-content>
 </ion-view>

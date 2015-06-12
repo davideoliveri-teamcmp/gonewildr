@@ -1,6 +1,16 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, Geolocation) {
+.controller('DashCtrl', function($scope, Geolocation, UsersList) {
+
+  UsersList
+    .getUsers(5)
+    .then(function (res) {
+      $scope.usersList = res.data.results;
+      console.log($scope.usersList);
+    }, function (data, status) {
+      console.log('failed!', status, data);
+    });
+
   $scope.location = {empty: true};
   Geolocation.get().then(function(success){
     $scope.location = {lat: success.latitude, lon: success.longitude};
