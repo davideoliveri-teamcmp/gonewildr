@@ -51,7 +51,7 @@ angular.module('starter.services', [])
 
 .service('Geolocation', ["$cordovaGeolocation", "$q", "$geofire", function($cordovaGeolocation, $q, $geofire){
   
-  var $geo = $geofire(new Firebase('https://gonewilder.firebaseio.com/'));
+  var $geo = $geofire(new Firebase('https://gonewilder.firebaseio.com/members_location'));
 
   var storedCoordinates = [];
 
