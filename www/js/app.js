@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'ngCordova'])
 
-.run(function($ionicPlatform, $cordovaGeolocation, $rootScope) {
+.run(function($ionicPlatform, $cordovaGeolocation, $rootScope, LoginService) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -24,12 +24,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
      });
   });
 
-    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams) {
-            if (toState.authenticate && !AuthenticationService.isLoggedIn()) {
-                $state.go('login');
-                event.preventDefault();
-            }
-    });
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
@@ -54,26 +48,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
             templateUrl: 'templates/latest.html',
             controller: 'LatestCtrl'
         })
-
-      // Each tab has its own nav history stack:
-
-        function authenticate($q, user, $state, $timeout) {
-          if (user.isAuthenticated()) {
-            // Resolve the promise successfully
-            return $q.when()
-          } else {
-            // The next bit of code is asynchronously tricky.
-
-            $timeout(function() {
-              // This code runs after the authentication promise has been rejected.
-              // Go to the log-in page
-              $state.go('login')
-            })
-
-            // Reject the authentication promise to prevent the state from loading
-            return $q.reject()
-          }
-    }
+        .state('home', {
+            urkl: '/home',
+            templateUrl: 'templates/home.html',
+            controller: 'HomeCtrl',
+            authenticate: true
+        })
 
   // if none of the above states are matched, use this as the fallback
     $urlRouterProvider.otherwise('/login');

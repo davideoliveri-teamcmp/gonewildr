@@ -41,12 +41,14 @@ angular.module('starter.services', [])
         .success(function(response) {
             //console.log(extractImages(response.data))
             //return response.data
+            console.log(response.data.children)
            deferred.resolve(extractImages(response.data));
 
         })
         .error(function(response) {
             console.log(response.data.message)
         })
+
         return deferred.promise;
     }
 
@@ -64,4 +66,35 @@ angular.module('starter.services', [])
 
     return service;
 
+})
+
+.service('LoginService', function($q, $http, $state) {
+    var service = {
+        login: login,
+        isLogged : isLogged
+    },
+    authenticated = false;
+
+    function login(username, password) {
+        $http({
+            method: 'GET',
+            url: 'http://52.24.232.201/gone-wildr/auth/login.php?username='+username+'&password='+password,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(response){
+            if (response.data) {
+                console.log('SERVER RESPONSE:',response.data)
+                authenticated = true;
+                $state.go('latest')
+            }
+        })
+        .error(function(response){
+            console.log(response.data.message);
+        })
+    }
+
+    function isLogged() {
+        return authenticated;
+    }
+    return service;
 })

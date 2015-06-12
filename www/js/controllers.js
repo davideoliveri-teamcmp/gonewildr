@@ -7,16 +7,17 @@ angular.module('starter.controllers', [])
   })
 })
 
-.controller('LoginCtrl', function($scope) {
+.controller('LoginCtrl', function($scope, LoginService) {
     $scope.text = 'This is some text!'
 
 
-  $scope.onTap = function() {
-    console.log('you tapped login!')
+  $scope.onTap = function(username, password) {
+    //console.log('you tapped login!')
+    LoginService.login(username, password)
   }
 })
 
-.controller('LatestCtrl', function($scope, RedditAPI) {
+.controller('LatestCtrl', function($scope, RedditAPI, $ionicModal, $ionicSlideBoxDelegate) {
     doRefresh();
     function doRefresh() {
         RedditAPI.gonewild().then(function(data){
@@ -25,13 +26,39 @@ angular.module('starter.controllers', [])
         })
     }
 
-    $scope.gotoImg = function(image) {
-        console.log(image)
-      //  state.go('fullscreen')
+    $ionicModal.fromTemplateUrl('my-modal.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.modal = modal;
+        //console.log('$scope.modal is:', $scope.modal)
+    });
+
+    $scope.openModal = function(idx) {
+        $ionicSlideBoxDelegate(idx)
+        $scope.modal.show();
+    };
+    $scope.closeModal = function() {
+        $scope.modal.hide();
+    };
+    $scope.goToSlide = function(index) {
+      $scope.modal.show();
+      $ionicSlideBoxDelegate.slide(index);
     }
-});
+  
+    // Called each time the slide changes
+    $scope.slideChanged = function(index) {
+      $scope.slideIndex = index;
+    };
+    $scope.$on('$destroy', function() {
+      $scope.modal.remove();
+    });
+    // Execu
+})
 
 
 
 
+.controller('HomeCtrl', function($scope){
 
+})
