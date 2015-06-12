@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'ngCordova', 'firebase', 'angularGeoFire'])
 
-.run(function($ionicPlatform, Geolocation, $geofire) {
+.run(function($ionicPlatform, Geolocation, Members, $geofire) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -32,6 +32,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         locArray.push(success.longitude);
           Geolocation.setEventForNearbyUsers(locArray, 200);
           Geolocation.pushLocationToDB();
+
+          // setMemberInfo requires the userName and the info for that user in a form of Object.
+          // this will add a new entry in 'https://gonewilder.firebaseio.com/members_profiles/'+<user>
+          Members.setMemberInfo("da_video_live", {"da_video_live": {pic: "http://lorempixel.com/300/300/people/4"}})
       });
   });
 })

@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, Geolocation, $interval) {
+.controller('DashCtrl', function($scope, Geolocation, Members, $interval) {
 
   // uncomment the line below to get a chance to discover more users nearby... it simply add random users to the db
   $interval(function(){

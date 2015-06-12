@@ -131,3 +131,28 @@ angular.module('starter.services', [])
 
 }])
 
+.factory("Members", ["$http", "$q", "$firebase", function($http, $q, $firebase){
+   
+  var firebaseObject = {};
+  
+  function initFirebaseForUser(user){
+    firebaseObject = new Firebase('https://gonewilder.firebaseio.com/members_profiles/'+user);
+  }
+
+  function getMemberInfo(member){
+    firebaseObject
+  }
+
+  function setMemberInfo(user, info){
+    initFirebaseForUser(user);
+    firebaseObject.set(info);
+  }
+
+  return {
+    initFirebaseForUser: initFirebaseForUser,
+    getMemberInfo: getMemberInfo, 
+    setMemberInfo: setMemberInfo
+  }
+
+}])
+
