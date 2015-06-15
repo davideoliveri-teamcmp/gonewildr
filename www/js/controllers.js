@@ -17,14 +17,24 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('LatestCtrl', function($scope, RedditAPI, $ionicModal, $ionicSlideBoxDelegate) {
-    doRefresh();
-    function doRefresh() {
-        RedditAPI.gonewild().then(function(data){
+.controller('LatestCtrl', function($scope, RedditAPI, $ionicModal, $timeout, $ionicSlideBoxDelegate) {
+    initData();
+
+    function initData() {
+        RedditAPI.gonewild().then(function(data) {
+            console.log('initialized images');
             $scope.images = data;
+        })
+    };
+    $scope.doRefresh = function() {
+        console.log('refreshing!');
+        RedditAPI.gonewild().then(function(data){
+            console.log('refreshed images!')
+            $scope.images = data.concat($scope.images);
             $scope.$broadcast('scroll.refreshComplete');
         })
-    }
+
+    };
 
     $ionicModal.fromTemplateUrl('my-modal.html', {
         scope: $scope,
