@@ -66,6 +66,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     resolve: {
         nearby: function(Geolocation) {
             return Geolocation.getListOfCloseMembers();
+        },
+        posts: function(MemberPosts){
+          console.log(MemberPosts.getAll());
+          return MemberPosts.getAll();
         }
     }
   })

@@ -230,16 +230,19 @@ angular.module('starter.controllers', [])
 
 
 
-.controller('UserlistCtrl', function($scope, Geolocation, Members, $interval, nearby) {
-
+.controller('UserlistCtrl', function($scope, Geolocation, Members, $interval, nearby, posts, MemberPosts) {
+console.log(posts);
     $scope.nearbyUsers = nearby;
     // Listen for Angular Broadcast
     $scope.$on("SEARCH:KEY_ENTERED", function(event, key, location, distance) {
         // Do something interesting with object
+        
         $scope.nearbyUsers.push({
             name: key,
             location: location,
-            distance: distance
+            distance: Math.floor(distance), 
+            avatar: "http://lorempixel.com/50/50/people/"+Math.floor((Math.random()*14)), 
+            posts: posts
         });
         // console.log(key, location, distance)
     });

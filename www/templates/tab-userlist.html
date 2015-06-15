@@ -24,18 +24,26 @@
         </div>
       </div>
     </div> -->
-    <div>Discovered {{nearbyUsers.length}} users</div>
+    <div>Discovered {{nearbyUsers.length - 1}} users</div>
    <!--  <div ng-repeat="user in nearbyUsers">
       <h3>{{user.name}}</h3>
       <p>{{user.distance}}, {{user.location}}</p>
       <hr>
     </div> -->
 
-    <div class="list card" ng-repeat="user in nearbyUsers">
+    <div class="list card" ng-repeat="user in nearbyUsers" ng-if="user.distance != 0">
       <div class="item item-divider"> {{user.name}} </div>
       <div class="item item-body">
-        <div>
-          Distance: {{user.distance}} <b>Location: {{user.location}}</b>
+        <div class="row">
+        <img src="{{user.avatar}}" alt="{{user.name}}" style="float: left; margin-right: 2rem">
+        <div style="display: block">
+          Distance: {{user.distance}} Km</b><br>
+        </div>
+        </div>
+        <div style="display: block" class="row">
+          <div ng-repeat="post in user.posts">
+            <img src="{{post.src}}" alt="" style="float: left; display: inline-block; padding: 10px; padding-left: 0px" width="150">
+          </div>
         </div>
       </div>
     </div>

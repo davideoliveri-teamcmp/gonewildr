@@ -33,27 +33,28 @@ angular.module('starter.services', [])
 .service('Geolocation', ["$cordovaGeolocation", "$q", "$geofire", "$rootScope", function($cordovaGeolocation, $q, $geofire, $rootScope){
   
   var $geo = $geofire(new Firebase('https://gonewildr.firebaseio.com/members_location'));
+  
 
   var storedCoordinates = [];
   var storedMembersCoordinates = [];
   var watch;
   var gotLocated = false;
    var deferredGetStored = $q.defer();
-function get(){
-     var defer = $q.defer();
-     $cordovaGeolocation.getCurrentPosition({timeout: 1000, maximumAge: 9000, enableHighAccuracy: true})
-       .then(function(success){
-         defer.resolve(success.coords);
+  function get(){
+       var defer = $q.defer();
+       $cordovaGeolocation.getCurrentPosition({timeout: 1000, maximumAge: 9000, enableHighAccuracy: true})
+         .then(function(success){
+           defer.resolve(success.coords);
 
-         storedCoordinates = [success.coords.latitude, success.coords.longitude];
-         deferredGetStored.resolve(storedCoordinates);
+           storedCoordinates = [success.coords.latitude, success.coords.longitude];
+           deferredGetStored.resolve(storedCoordinates);
 
-         gotLocated = true;
-       }, function(fail){
-           defer.reject(fail);
-       });
-     return defer.promise;
- }
+           gotLocated = true;
+         }, function(fail){
+             defer.reject(fail);
+         });
+       return defer.promise;
+   }
   function getUpdatedPosition(){
      watch = $cordovaGeolocation.watchPosition({timeout: 1001, maximumAge: 9000, enableHighAccuracy: true}); 
       return watch; 
@@ -93,13 +94,13 @@ function get(){
     return storedMembersCoordinates;
   }
 
-    $rootScope.$on("SEARCH:KEY_ENTERED", function (event, key, location, distance) {
-        // Do something interesting with object
-        storedMembersCoordinates.push({name: key, location: location});
-        console.log("ok, from service setEventForUsers");
-        // $scope.nearbyUsers.push({name: key, location: location, distance: distance});
-        // console.log(key, location, distance)
-    });
+    // $rootScope.$on("SEARCH:KEY_ENTERED", function (event, key, location, distance) {
+    //     // Do something interesting with object
+    //     storedMembersCoordinates.push({name: key, location: location, distance: Math.floor(distance)});
+    //     console.log("ok, from service setEventForUsers");
+    //     // $scope.nearbyUsers.push({name: key, location: location, distance: distance});
+    //     // console.log(key, location, distance)
+    // });
 
   function setTestMoreUsers(){
     // thsi function is just to create random user with semi-random coordinates, so that we can test realtime updates on the list of users... it works...
@@ -213,6 +214,32 @@ function get(){
     return service;
 
 })
+
+    .service("MemberPosts", [ "$http", "$q",  function($http, $q){
+      return {
+        getAll: function(){
+          var deferred = $q.defer();
+
+          // $http.get("http://52.24.232.201/gone-wildr/test/test_images.php?limit=10").then(function(success){
+          //   console.log(success)
+          //   deferred.resolve(success);
+          // }, function(fail){
+          //   deferred.resolve(fail)
+          // })
+        var latestPosts = []
+        
+        for (var i = 0; i < 10; i++) {
+          latestPosts.push({src: "http://lorempixel.com/400/300/nightlife/"+(i+1)})
+        };
+
+        setTimeout(function(){
+          deferred.resolve(latestPosts);
+        })
+
+          return deferred.promise
+        }
+      }
+    }])
     .factory('Chats', function() {
         // Might use a resource here that returns a JSON array
 
