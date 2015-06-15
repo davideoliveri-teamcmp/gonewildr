@@ -49,20 +49,26 @@ angular.module('starter.services', [])
   };
 })
 
-.service('Geolocation', ["$cordovaGeolocation", "$q", "$geofire", function($cordovaGeolocation, $q, $geofire){
+.service('Geolocation', ["$cordovaGeolocation", "$q", "$geofire", "$rootScope", function($cordovaGeolocation, $q, $geofire, $rootScope){
   
-  var $geo = $geofire(new Firebase('https://gonewilder.firebaseio.com/members_location'));
+  var $geo = $geofire(new Firebase('https://gonewildr.firebaseio.com/members_location'));
 
   var storedCoordinates = [];
-
+  var storedMembersCoordinates = [];
   var watch;
+  var gotLocated = false;
+   var deferredGetStored = $q.defer();
 
   function get(){
       var defer = $q.defer();
       $cordovaGeolocation.getCurrentPosition({timeout: 1000, maximumAge: 9000, enableHighAccuracy: true})
         .then(function(success){
           defer.resolve(success.coords);
+
           storedCoordinates = [success.coords.latitude, success.coords.longitude];
+          deferredGetStored.resolve(storedCoordinates);
+
+          gotLocated = true;
         }, function(fail){
             defer.reject(fail);
         });
@@ -88,8 +94,9 @@ angular.module('starter.services', [])
     $cordovaGeolocation.clearWatch(watch);
   }
 
+ 
   function getStored(){
-    return storedCoordinates;
+    return deferredGetStored.promise; //storedCoordinates;
   }
 
   function setEventForNearbyUsers(coords, r){
@@ -100,7 +107,20 @@ angular.module('starter.services', [])
       });
       // this will broadcast an event whenever a new user is added into the db AND is close to me (the user of the app)
       var geoQueryCallback = query.on("key_entered", "SEARCH:KEY_ENTERED");
+
   }
+
+  function getListOfCloseMembers(){
+    return storedMembersCoordinates;
+  }
+
+    $rootScope.$on("SEARCH:KEY_ENTERED", function (event, key, location, distance) {
+        // Do something interesting with object
+        storedMembersCoordinates.push({name: key, location: location});
+        console.log("ok, from service setEventForNearbyUsers");
+        // $scope.nearbyUsers.push({name: key, location: location, distance: distance});
+        // console.log(key, location, distance)
+    });
 
   function setTestMoreUsers(){
     // thsi function is just to create random user with semi-random coordinates, so that we can test realtime updates on the list of users... it works...
@@ -110,8 +130,8 @@ angular.module('starter.services', [])
     for( var i=0; i < 5; i++ ){
       newUserName += possible.charAt(Math.floor(Math.random() * possible.length));
     }
-    var lat = Math.random()*2*41.3907;
-    var lon = Math.random()*2*2.13907;
+    var lat = Math.random()+storedCoordinates[0]-Math.random();
+    var lon = Math.random()+storedCoordinates[1]-Math.random();
      
       $geo.$set(newUserName, [lat, lon])
         .catch(function(err) {
@@ -126,21 +146,37 @@ angular.module('starter.services', [])
     clearWatch: clearWatch,
     getStored: getStored,
     setEventForNearbyUsers: setEventForNearbyUsers,
-    setTestMoreUsers: setTestMoreUsers    
+    setTestMoreUsers: setTestMoreUsers, 
+    getListOfCloseMembers: getListOfCloseMembers   
   }
 
 }])
+
+.service("GoWilderPost", function($http, $q){
+
+  var latesGonewilderURL = "http://www.reddit.com/r/gonewild/new.json";
+    return {
+      getLatest: function(){
+        var latestPostDeferred = $q.defer();
+        $http.get(latesGonewilderURL).then(function(success){
+          latestPostDeferred.resolve(success.data);
+        })
+
+        return latestPostDeferred.promise;
+      }
+    }
+})
 
 .factory("Members", ["$http", "$q", "$firebase", function($http, $q, $firebase){
    
   var firebaseObject = {};
   
   function initFirebaseForUser(user){
-    firebaseObject = new Firebase('https://gonewilder.firebaseio.com/members_profiles/'+user);
+    firebaseObject = new Firebase('https://gonewildr.firebaseio.com/members_profiles/'+user);
   }
 
   function getMemberInfo(member){
-    firebaseObject
+    
   }
 
   function setMemberInfo(user, info){

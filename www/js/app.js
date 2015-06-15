@@ -30,7 +30,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         var locArray = [];
         locArray.push(success.latitude);
         locArray.push(success.longitude);
-          Geolocation.setEventForNearbyUsers(locArray, 200);
+        console.log("setting event for nearby user")
+          Geolocation.setEventForNearbyUsers(locArray, 300);
           Geolocation.pushLocationToDB();
 
           // setMemberInfo requires the userName and the info for that user in a form of Object.
@@ -62,7 +63,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     views: {
       'tab-dash': {
         templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl'
+        controller: 'DashCtrl', 
+        resolve: {
+          nearby: function(Geolocation){
+            return Geolocation.getListOfCloseMembers();
+          }
+        }
       }
     }
   })
@@ -86,17 +92,48 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       }
     })
 
-  .state('tab.account', {
-    url: '/account',
+  .state('tab.settings', {
+    url: '/settings',
     views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
+      'tab-settings': {
+        templateUrl: 'templates/tab-settings.html',
+        controller: 'SettingCtrl'
+      }
+    }
+  })
+
+  .state('tab.home', {
+    url: '/home', 
+    views: {
+      'tab-home':{
+        templateUrl: 'templates/tab-home.html', 
+        controller: "HomeCtrl", 
+        resolve: {
+          latestPosts: function(GoWilderPost){
+            return GoWilderPost.getLatest();
+          }
+        }
+      }
+    }
+  })
+
+  .state('tab.map', {
+    url: '/map', 
+    views: {
+      'tab-map':{
+        templateUrl: 'templates/tab-map.html', 
+        controller: "MapCtrl", 
+        resolve: {
+          location: function(Geolocation){
+            Geolocation.get(); // call this to be sure you have set the storedCoordinates array in the service (pretty dirty eh?)
+            return Geolocation.getStored();
+          }
+        }
       }
     }
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/tab/home');
 
 });

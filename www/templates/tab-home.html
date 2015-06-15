@@ -1,0 +1,26 @@
+<ion-view view-title="dfkjgbdsfgsdjh">
+  <ion-content class="padding">
+    <div class="row" ng-repeat="post in latestPosts" ng-if="$index % 4 === 0">
+        <div class="col col-25" ng-if="$index < latestPosts.length">
+            <a href="" ng-click="openPostUrl($index)">
+            	<img ng-src="{{latestPosts[$index].data.thumbnail}}" width="100%" />
+            </a>
+        </div>
+        <div class="col col-25" ng-if="$index + 1 < latestPosts.length">
+            <a href="" ng-click="openPostUrl($index)">
+            	<img ng-src="{{latestPosts[$index + 1].data.thumbnail}}" width="100%" />
+            </a>
+        </div>
+        <div class="col col-25" ng-if="$index + 2 < latestPosts.length">
+            <a href="" ng-click="openPostUrl($index)">
+            	<img ng-src="{{latestPosts[$index + 2].data.thumbnail}}" width="100%" />
+            </a>
+        </div>
+        <div class="col col-25" ng-if="$index + 3 < latestPosts.length">
+            <a href="" ng-click="openPostUrl($index)">
+            	<img ng-src="{{latestPosts[$index + 3].data.thumbnail}}" width="100%" />
+            </a>
+        </div>
+    </div>
+  </ion-content>
+</ion-view>
