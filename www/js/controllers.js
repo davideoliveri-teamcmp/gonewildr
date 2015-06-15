@@ -15,7 +15,7 @@ angular.module('starter.controllers', [])
 
     function initData() {
         RedditAPI.gonewild().then(function(data) {
-            console.log('initialized images');
+            console.log('initialized images', data);
             $scope.images = data;
         })
     };
@@ -44,6 +44,7 @@ angular.module('starter.controllers', [])
         $scope.modal.hide();
     };
     $scope.goToSlide = function(index) {
+        $scope.slideIndex = index;
       $scope.modal.show();
       $ionicSlideBoxDelegate.slide(index);
     }
