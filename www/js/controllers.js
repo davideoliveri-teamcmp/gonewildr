@@ -1,67 +1,63 @@
 angular.module('starter.controllers', [])
-
-.controller('DashCtrl', function($scope, Geolocation, Members, $interval, nearby) {
-
- // uncomment the line below to get a chance to discover more users nearby... it simply add random users to the db
-  // $interval(function(){
-  //   Geolocation.setTestMoreUsers()
-  // }, 2000);
-
-  $scope.nearbyUsers = nearby;
- // Listen for Angular Broadcast
-  $scope.$on("SEARCH:KEY_ENTERED", function (event, key, location, distance) {
-      // Do something interesting with object
-      $scope.nearbyUsers.push({name: key, location: location, distance: distance});
-      // console.log(key, location, distance)
-  });
-})
-
-.controller('LoginCtrl', function($scope, Chats, Geolocation) {
+.controller('LoginCtrl', function($scope, LoginService) {
+    $scope.text = 'This is some text!'
 
 
-  $scope.onTap = function() {
-    console.log('you tapped login!')
+  $scope.onTap = function(username, password) {
+    console.log('Hey '+username+' you tapped login!')
+    LoginService.login(username, password)
   }
 })
 
-.controller('LatestCtrl', function($scope, RedditAPI) {
-    doRefresh();
-    function doRefresh() {
-        RedditAPI.gonewild().then(function(data){
+
+.controller('HomeCtrl', function($scope, RedditAPI, $ionicModal, $timeout, $ionicSlideBoxDelegate) {
+    initData();
+
+    function initData() {
+        RedditAPI.gonewild().then(function(data) {
+            console.log('initialized images');
             $scope.images = data;
+        })
+    };
+    $scope.doRefresh = function() {
+        console.log('refreshing!');
+        RedditAPI.gonewild().then(function(data){
+            console.log('refreshed images!')
+            $scope.images = data.concat($scope.images);
             $scope.$broadcast('scroll.refreshComplete');
         })
     }
-})
 
-.controller('HomeCtrl', function($scope, $cordovaInAppBrowser, latestPosts) {
-  $scope.latestPosts = latestPosts.data.children;
-  console.log($scope.latestPosts);
+    $ionicModal.fromTemplateUrl('my-modal.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.modal = modal;
+        //console.log('$scope.modal is:', $scope.modal)
+    });
 
-  // $scope.openPostUrl =  function(index){
-  //   // window.open(url, "_blank", "location=yes");
-  // }
-
-    var options = {
-      location: 'yes',
-      clearcache: 'yes',
-      toolbar: 'yes',
-      closebuttoncaption: 'DONE?'
+    $scope.openModal = function(idx) {
+        $ionicSlideBoxDelegate(idx)
+        $scope.modal.show();
     };
-
-
-    $scope.openPostUrl = function(index) {
-      var url = $scope.latestPosts[index].data.url;
-      $cordovaInAppBrowser.open(url, '_blank', options)
-        .then(function(event) {
-          // success
-        })
-        .catch(function(event) {
-          // error
-        });
+    $scope.closeModal = function() {
+        $scope.modal.hide();
+    };
+    $scope.goToSlide = function(index) {
+      $scope.modal.show();
+      $ionicSlideBoxDelegate.slide(index);
     }
-
+  
+    // Called each time the slide changes
+    $scope.slideChanged = function(index) {
+      $scope.slideIndex = index;
+    };
+    $scope.$on('$destroy', function() {
+      $scope.modal.remove();
+    });
+    // Execu
 })
+
 
 .controller('SettingCtrl', function($scope, $interval, Geolocation) {
   $scope.toggle = {
@@ -257,5 +253,3 @@ angular.module('starter.controllers', [])
         Chats.remove(chat);
     }
 })
-
-

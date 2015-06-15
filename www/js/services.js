@@ -1,5 +1,34 @@
 angular.module('starter.services', [])
+.service('LoginService', function($q, $http, $state) {
+    var service = {
+        login: login,
+        isLogged : isLogged
+    },
+    authenticated = false;
 
+    function login(username, password) {
+        $http({
+            method: 'GET',
+            url: 'http://52.24.232.201/gone-wildr/auth/login.php?username='+username+'&password='+password,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(response){
+            console.log('trying to login!')
+            if (response.data) {
+                console.log('SERVER RESPONSE:',response.data)
+                $state.go('tab.home')
+            }
+        })
+        .error(function(response){
+            console.log(response.data.message);
+        })
+    }
+
+    function isLogged() {
+        return authenticated;
+    }
+    return service;
+})
 
 .service('Geolocation', ["$cordovaGeolocation", "$q", "$geofire", "$rootScope", function($cordovaGeolocation, $q, $geofire, $rootScope){
   
@@ -10,23 +39,21 @@ angular.module('starter.services', [])
   var watch;
   var gotLocated = false;
    var deferredGetStored = $q.defer();
+function get(){
+     var defer = $q.defer();
+     $cordovaGeolocation.getCurrentPosition({timeout: 1000, maximumAge: 9000, enableHighAccuracy: true})
+       .then(function(success){
+         defer.resolve(success.coords);
 
-  function get(){
-      var defer = $q.defer();
-      $cordovaGeolocation.getCurrentPosition({timeout: 1000, maximumAge: 9000, enableHighAccuracy: true})
-        .then(function(success){
-          defer.resolve(success.coords);
+         storedCoordinates = [success.coords.latitude, success.coords.longitude];
+         deferredGetStored.resolve(storedCoordinates);
 
-          storedCoordinates = [success.coords.latitude, success.coords.longitude];
-          deferredGetStored.resolve(storedCoordinates);
-
-          gotLocated = true;
-        }, function(fail){
-            defer.reject(fail);
-        });
-      return defer.promise;
-  }
-  
+         gotLocated = true;
+       }, function(fail){
+           defer.reject(fail);
+       });
+     return defer.promise;
+ }
   function getUpdatedPosition(){
      watch = $cordovaGeolocation.watchPosition({timeout: 1001, maximumAge: 9000, enableHighAccuracy: true}); 
       return watch; 
@@ -186,54 +213,51 @@ angular.module('starter.services', [])
     return service;
 
 })
+    .factory('Chats', function() {
+        // Might use a resource here that returns a JSON array
 
+        // Some fake testing data
+        var chats = [{
+            id: 0,
+            name: 'Ben Sparrow',
+            lastText: 'You on your way?',
+            face: 'https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png'
+        }, {
+            id: 1,
+            name: 'Max Lynx',
+            lastText: 'Hey, it\'s me',
+            face: 'https://avatars3.githubusercontent.com/u/11214?v=3&s=460'
+        },{
+            id: 2,
+            name: 'Adam Bradleyson',
+            lastText: 'I should buy a boat',
+            face: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg'
+        }, {
+            id: 3,
+            name: 'Perry Governor',
+            lastText: 'Look at my mukluks!',
+            face: 'https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png'
+        }, {
+            id: 4,
+            name: 'Mike Harrington',
+            lastText: 'This is wicked good ice cream.',
+            face: 'https://pbs.twimg.com/profile_images/578237281384841216/R3ae1n61.png'
+        }];
 
-
-.factory('Chats', function() {
- // Might use a resource here that returns a JSON array
-
- // Some fake testing data
- var chats = [{
-   id: 0,
-   name: 'Ben Sparrow',
-   lastText: 'You on your way?',
-   face: 'https://pbs.twimg.com/profile_images/514549811765211136/9SgAuHeY.png'
- }, {
-   id: 1,
-   name: 'Max Lynx',
-   lastText: 'Hey, it\'s me',
-   face: 'https://avatars3.githubusercontent.com/u/11214?v=3&s=460'
- },{
-   id: 2,
-   name: 'Adam Bradleyson',
-   lastText: 'I should buy a boat',
-   face: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg'
- }, {
-   id: 3,
-   name: 'Perry Governor',
-   lastText: 'Look at my mukluks!',
-   face: 'https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png'
- }, {
-   id: 4,
-   name: 'Mike Harrington',
-   lastText: 'This is wicked good ice cream.',
-   face: 'https://pbs.twimg.com/profile_images/578237281384841216/R3ae1n61.png'
- }];
-
- return {
-   all: function() {
-     return chats;
-   },
-   remove: function(chat) {
-     chats.splice(chats.indexOf(chat), 1);
-   },
-   get: function(chatId) {
-     for (var i = 0; i < chats.length; i++) {
-       if (chats[i].id === parseInt(chatId)) {
-         return chats[i];
-       }
-     }
-     return null;
-   }
- };
-})
+        return {
+            all: function() {
+                return chats;
+            },
+            remove: function(chat) {
+                chats.splice(chats.indexOf(chat), 1);
+            },
+            get: function(chatId) {
+                for (var i = 0; i < chats.length; i++) {
+                    if (chats[i].id === parseInt(chatId)) {
+                        return chats[i];
+                    }
+                }
+                return null;
+            }
+        };
+    })
