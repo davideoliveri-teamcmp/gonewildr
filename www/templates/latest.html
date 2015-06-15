@@ -1,0 +1,39 @@
+<ion-view view-title="Latest Submissions">
+    <ion-content id="latest">
+                <ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()">
+                </ion-refresher>
+                <div class="row" ng-repeat="image in images track by $index" ng-if="$index % 4 === 0">
+
+                        <!--img ng-src="{{image.thumb}}" width="100%" /-->
+                        <div class="col col-25" ng-if="$index < images.length">
+                            <img ng-src="{{images[$index].thumb}}" on-tap="goToSlide($index)" width="100%" />
+                        </div>
+                        <div class="col col-25" ng-if="$index + 1 < images.length">
+                            <img ng-src="{{images[$index + 1].thumb}}" on-tap="goToSlide($index)" width="100%" />
+                        </div>
+                        <div class="col col-25" ng-if="$index + 2 < images.length">
+                            <img ng-src="{{images[$index + 2].thumb}}" on-tap="goToSlide($index)" width="100%" />
+                        </div>
+                        <div class="col col-25" ng-if="$index + 3 < images.length">
+                            <img ng-src="{{images[$index + 3].thumb}}"  on-tap="goToSlide($index)" width="100%" />
+                        </div>
+
+                </div>
+    </ion-content>
+</ion-view>
+
+
+
+  <script id="my-modal.html" type="text/ng-template">
+      <div class="modal image-modal transparent" 
+           ng-click="closeModal()">
+        <ion-slide-box on-slide-changed="slideChanged(index)" 
+                       show-pager="false">
+          <ion-slide ng-repeat="image in images">
+
+            <img ng-src="{{image.full}}" class="fullscreen-image" />
+
+          </ion-slide>
+        </ion-slide-box>
+      </div>
+  </script>

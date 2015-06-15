@@ -1,0 +1,25 @@
+<ion-view view-title="GoneWildr!">
+    <ion-content class="padding-vertical">
+        <div class="card" id="login">
+          <div class="item item-text-wrap">
+            <h1>Log in with reddit</h1>
+            <i class="fa fa-reddit"></i>
+
+            <label class="item item-input">
+                <span class="input-label">Username</span>
+                <input type="text" ng-model="username">
+            </label>
+
+            <label class="item item-input">
+                <span class="input-label">Password</span>
+                <input type="password" ng-model="password">
+            </label>
+            <button class="button button-positive" on-tap="onTap(username, password)" ng-disabled="!password || !username">
+              Log in
+            </button>
+
+          </div>
+        </div>
+    </ion-content>
+</ion-view>
+
