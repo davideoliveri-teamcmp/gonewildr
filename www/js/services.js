@@ -220,21 +220,21 @@ angular.module('starter.services', [])
         getAll: function(){
           var deferred = $q.defer();
 
-          // $http.get("http://52.24.232.201/gone-wildr/test/test_images.php?limit=10").then(function(success){
-          //   console.log(success)
-          //   deferred.resolve(success);
-          // }, function(fail){
-          //   deferred.resolve(fail)
-          // })
-        var latestPosts = []
+          $http.get("http://52.24.232.201/gone-wildr/test/test_images.php?limit=10").then(function(success){
+            console.log(success.data.images)
+            deferred.resolve(success.data.images);
+          }, function(fail){
+            deferred.resolve(fail)
+          })
+        // var latestPosts = []
         
-        for (var i = 0; i < 10; i++) {
-          latestPosts.push({src: "http://lorempixel.com/400/300/nightlife/"+(i+1)})
-        };
+        // for (var i = 0; i < 10; i++) {
+        //   latestPosts.push({src: "http://lorempixel.com/400/300/nightlife/"+(i+1)})
+        // };
 
-        setTimeout(function(){
-          deferred.resolve(latestPosts);
-        })
+        // setTimeout(function(){
+        //   deferred.resolve(latestPosts);
+        // })
 
           return deferred.promise
         }

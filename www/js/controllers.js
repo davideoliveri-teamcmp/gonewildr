@@ -236,13 +236,14 @@ console.log(posts);
     // Listen for Angular Broadcast
     $scope.$on("SEARCH:KEY_ENTERED", function(event, key, location, distance) {
         // Do something interesting with object
-        
+        var start = Math.random()*posts.length-4;
+        var end = posts.length-start;
         $scope.nearbyUsers.push({
             name: key,
             location: location,
             distance: Math.floor(distance), 
-            avatar: "http://lorempixel.com/50/50/people/"+Math.floor((Math.random()*14)), 
-            posts: posts
+            avatar: "http://lorempixel.com/50/50/people/"+Math.floor((Math.random()*12)), 
+            posts: posts.slice(start, end)
         });
         // console.log(key, location, distance)
     });
